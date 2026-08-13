@@ -1,0 +1,289 @@
+[gd_scene format=3 uid="uid://cde6v7u74i5aa"]
+
+[ext_resource type="Script" uid="uid://cadrjcfa6p52e" path="res://scenes/ui/shop.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn_hover"]
+bg_color = Color(0.92, 0.92, 0.93, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header_pill"]
+bg_color = Color(0.97, 0.97, 0.98, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+shadow_color = Color(0, 0, 0, 0.15)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad_card"]
+bg_color = Color(0.97, 0.97, 0.98, 0.97)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_watch_ad_btn"]
+bg_color = Color(0.05, 0.05, 0.06, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_watch_ad_btn_hover"]
+bg_color = Color(0.18, 0.18, 0.2, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_watch_ad_btn_disabled"]
+bg_color = Color(0.6, 0.6, 0.62, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.3, 0.3, 0.32, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_reward_toast"]
+bg_color = Color(0.97, 0.97, 0.98, 0.97)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 8
+
+[node name="Shop" type="Control" unique_id=210099001]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="PaperBg" type="ColorRect" parent="." unique_id=210099002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.97, 0.97, 0.98, 1)
+
+[node name="Header" type="Control" parent="." unique_id=210099003]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 64.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = 108.0
+grow_horizontal = 2
+
+[node name="BackButton" type="Button" parent="Header" unique_id=210099004]
+custom_minimum_size = Vector2(88, 76)
+layout_mode = 0
+offset_right = 88.0
+offset_bottom = 76.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxFlat_back_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_back_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back_btn_hover")
+text = "<"
+
+[node name="TitleLabel" type="Label" parent="Header" unique_id=210099005]
+layout_mode = 0
+offset_left = 108.0
+offset_right = 400.0
+offset_bottom = 76.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 40
+text = "SHOP"
+vertical_alignment = 1
+
+[node name="ShardsPill" type="Panel" parent="Header" unique_id=210099017]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -280.0
+offset_bottom = 76.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_header_pill")
+
+[node name="ShardsLabel" type="Label" parent="Header/ShardsPill" unique_id=210099006]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_right = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 26
+text = "0 Shades"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Content" type="VBoxContainer" parent="." unique_id=210099007]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.5
+offset_top = -238.0
+offset_right = 380.5
+offset_bottom = 238.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="AdCard" type="Panel" parent="Content" unique_id=210099008]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad_card")
+
+[node name="AdCardMargin" type="MarginContainer" parent="Content/AdCard" unique_id=210099009]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 24.0
+offset_right = -28.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AdCardVBox" type="VBoxContainer" parent="Content/AdCard/AdCardMargin" unique_id=210099010]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="AdCardTitle" type="Label" parent="Content/AdCard/AdCardMargin/AdCardVBox" unique_id=210099011]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 40
+text = "Free Shades"
+horizontal_alignment = 1
+
+[node name="AdCardSubtitle" type="Label" parent="Content/AdCard/AdCardMargin/AdCardVBox" unique_id=210099012]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.32, 1)
+theme_override_font_sizes/font_size = 30
+text = "Watch a short ad to earn 25 Shades"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="WatchAdButton" type="Button" parent="Content/AdCard/AdCardMargin/AdCardVBox" unique_id=210099013]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.97, 0.97, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_watch_ad_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_watch_ad_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_watch_ad_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_watch_ad_btn_disabled")
+text = "▶  WATCH AD"
+
+[node name="AdStatusLabel" type="Label" parent="Content/AdCard/AdCardMargin/AdCardVBox" unique_id=210099014]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.32, 1)
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+
+[node name="RewardToast" type="Panel" parent="." unique_id=210099015]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 190.0
+offset_right = 160.0
+offset_bottom = 238.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_reward_toast")
+
+[node name="RewardToastLabel" type="Label" parent="RewardToast" unique_id=210099016]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 22
+text = "+25 Shades!"
+horizontal_alignment = 1
+vertical_alignment = 1

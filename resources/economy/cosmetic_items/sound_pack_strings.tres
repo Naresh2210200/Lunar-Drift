@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CosmeticItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/economy/cosmetic_item.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = "sound_pack_strings"
+display_name = "Strings Ambience"
+category = 4
+cost = 100
+description = "Swaps the piano-led ambient bed for a strings-led one."

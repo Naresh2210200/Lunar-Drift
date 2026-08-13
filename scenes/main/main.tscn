@@ -1,0 +1,194 @@
+[gd_scene format=3 uid="uid://b1mx1osy62jr3"]
+
+[ext_resource type="Script" uid="uid://cd80d4ber48tw" path="res://scenes/main/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://bb1mpyvpc46m3" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://dgf3cve5n8eik" path="res://scenes/main/camera_rig.gd" id="3_camrig"]
+[ext_resource type="Shader" uid="uid://dutq3vlk5i7bh" path="res://shaders/water/water.gdshader" id="4_watershader"]
+[ext_resource type="Script" uid="uid://dbwsv23hv6wg7" path="res://scenes/world/ocean_follow.gd" id="5_oceanfollow"]
+[ext_resource type="PackedScene" uid="uid://i5s8q6d0blil" path="res://scenes/object/tower_windmill.tscn" id="6_7smn1"]
+[ext_resource type="Script" uid="uid://dydy2m776ls4n" path="res://scenes/world/moon_rig.gd" id="6_moonrig"]
+[ext_resource type="PackedScene" uid="uid://v8aoxoq2kctt" path="res://assets/MEDIWIL/Wall.fbx" id="6_pg34l"]
+[ext_resource type="PackedScene" uid="uid://2m487qfr1stp" path="res://assets/MEDIWIL/TallWall.fbx" id="7_m4h2d"]
+[ext_resource type="Material" path="res://resources/materials/outline_material.tres" id="7_outline"]
+[ext_resource type="PackedScene" uid="uid://b4opaurbyrgkq" path="res://scenes/object/windmill.tscn" id="7_raeie"]
+[ext_resource type="PackedScene" uid="uid://chw0gt4gex3ta" path="res://assets/MEDIWIL/WallEntranceBricks.fbx" id="8_p8abn"]
+[ext_resource type="Script" uid="uid://ddfjbxoddd1d5" path="res://scenes/world/procedural_world.gd" id="8_proceduralworld"]
+[ext_resource type="PackedScene" uid="uid://bkvuviyc0k08u" path="res://assets/MEDIWIL/Tower.fbx" id="9_s17dp"]
+[ext_resource type="Script" uid="uid://drp4sq88ej05b" path="res://scenes/main/speed_lines.gd" id="9_speedlines"]
+[ext_resource type="PackedScene" uid="uid://c85xt076ps0cl" path="res://assets/MEDIWIL/PointyTower.fbx" id="10_37hlw"]
+[ext_resource type="Shader" uid="uid://bb6r3v075thd" path="res://shaders/speed_lines/speed_lines.gdshader" id="10_speedlinesshader"]
+[ext_resource type="PackedScene" uid="uid://lb7wd74vytvd" path="res://assets/MEDIWIL/TallWallEntrance.fbx" id="11_0bhws"]
+[ext_resource type="PackedScene" uid="uid://mq5ovlrxq1gd" path="res://assets/MEDIWIL/SmallTower.fbx" id="11_6llfj"]
+[ext_resource type="Script" uid="uid://cjgde3xxj244s" path="res://scenes/main/intro_sequence.gd" id="11_introsequence"]
+[ext_resource type="PackedScene" uid="uid://b8dhuuijhbkuc" path="res://assets/MEDIWIL/SmallSquareTowerBricks.fbx" id="12_0bhws"]
+[ext_resource type="PackedScene" uid="uid://c8k2n5xhud001" path="res://scenes/ui/hud.tscn" id="12_hud"]
+[ext_resource type="PackedScene" uid="uid://c0nu23g0urnjw" path="res://assets/MEDIWIL/Bridge.fbx" id="13_62atk"]
+[ext_resource type="PackedScene" uid="uid://ue0fld3ndoug" path="res://assets/MEDIWIL/Tunnel.fbx" id="14_i7in8"]
+[ext_resource type="PackedScene" uid="uid://5bsf5d8rboik" path="res://assets/MEDIWIL/WallEntrance.fbx" id="18_62atk"]
+[ext_resource type="PackedScene" uid="uid://bnbxv7anqirq1" path="res://assets/MEDIWIL/WatchTowerWRoof.fbx" id="19_i7in8"]
+[ext_resource type="PackedScene" uid="uid://3yuo6ohtnyn" path="res://assets/MEDIWIL/Banner.fbx" id="20_gkmcc"]
+[ext_resource type="Script" uid="uid://ccrpcp86lmqlj" path="res://scenes/world/ocean_activity.gd" id="21_oceanactivity"]
+[ext_resource type="Script" uid="uid://b6m55473kvh67" path="res://scenes/main/death_sequence.gd" id="22_deathsequence"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.82, 0.82, 0.85, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.55, 0.6, 1)
+ambient_light_energy = 0.5
+fog_enabled = true
+fog_light_color = Color(0.85, 0.85, 0.88, 1)
+fog_light_energy = 0.6
+fog_density = 0.008
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ocean"]
+size = Vector2(200, 200)
+subdivide_width = 48
+subdivide_depth = 48
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ocean"]
+render_priority = 0
+next_pass = ExtResource("7_outline")
+shader = ExtResource("4_watershader")
+shader_parameter/WATER_COL = Vector4(0.86, 0.86, 0.88, 1)
+shader_parameter/WATER2_COL = Vector4(0.06, 0.06, 0.07, 1)
+shader_parameter/FOAM_COL = Vector4(0.98, 0.98, 0.97, 1)
+shader_parameter/distortion_speed = 0.35
+shader_parameter/tile = Vector2(50, 50)
+shader_parameter/wave_speed = 0.5
+shader_parameter/wave_height = 0.14
+shader_parameter/wave_frequency = 0.4
+shader_parameter/activity = 0.0
+shader_parameter/anim_time = 0.0
+shader_parameter/moon_direction = Vector3(0.3, 0.6, -0.7)
+shader_parameter/moon_glow_color = Color(1, 1, 1, 1)
+shader_parameter/glow_sharpness = 64.0
+shader_parameter/glow_strength = 0.8
+shader_parameter/world_uv_scale = 0.005
+
+[sub_resource type="SphereMesh" id="SphereMesh_moon"]
+radius = 12.0
+height = 24.0
+
+[sub_resource type="StandardMaterial3D" id="StdMat_moon"]
+next_pass = ExtResource("7_outline")
+emission_enabled = true
+emission = Color(0.98, 0.96, 0.9, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_speedlines"]
+shader = ExtResource("10_speedlinesshader")
+shader_parameter/intensity = 0.0
+shader_parameter/line_count = 28.0
+shader_parameter/inner_clear_radius = 0.18
+shader_parameter/outer_fade_radius = 0.7
+
+[node name="Main" type="Node3D" unique_id=1902060397]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1935390518]
+environment = SubResource("Environment_main")
+
+[node name="World" type="Node3D" parent="." unique_id=762965765]
+
+[node name="OceanPlane" type="MeshInstance3D" parent="World" unique_id=66015466]
+mesh = SubResource("PlaneMesh_ocean")
+surface_material_override/0 = SubResource("ShaderMaterial_ocean")
+script = ExtResource("5_oceanfollow")
+target_path = NodePath("../Player")
+
+[node name="OceanActivity" type="Node" parent="World/OceanPlane" unique_id=489082702]
+script = ExtResource("21_oceanactivity")
+ocean_material = SubResource("ShaderMaterial_ocean")
+player_path = NodePath("../../Player")
+
+[node name="ProceduralWorld" type="Node3D" parent="World" unique_id=66245523]
+script = ExtResource("8_proceduralworld")
+target_path = NodePath("../Player")
+outline_material = ExtResource("7_outline")
+chunks_ahead = 2
+chunks_behind = 0
+chunks_side = 2
+props_per_chunk_min = 1
+props_min_spacing = 20.0
+obstacle_rows_per_chunk_min = 1
+obstacle_min_row_gap = 15.0
+props_grace_chunks = 3
+collectibles_per_chunk_min = 2
+collectibles_per_chunk_max = 4
+biome_band_length = 50
+biome_grace_chunks = 3
+cube_rows_per_chunk_min = 3
+cube_rows_per_chunk_max = 6
+cube_min_row_gap = 6.0
+cube_size_min = 3.0
+cube_size_max = 6.0
+windmill_scenes = Array[PackedScene]([ExtResource("7_raeie"), ExtResource("6_7smn1")])
+castle_rows_per_chunk_min = 4
+castle_rows_per_chunk_max = 6
+castle_min_row_gap = 10.0
+castle_wall_scenes = Array[PackedScene]([ExtResource("6_pg34l"), ExtResource("7_m4h2d"), ExtResource("8_p8abn"), ExtResource("11_0bhws")])
+castle_landmark_scenes = Array[PackedScene]([ExtResource("9_s17dp"), ExtResource("10_37hlw"), ExtResource("11_6llfj"), ExtResource("12_0bhws"), ExtResource("13_62atk"), ExtResource("14_i7in8"), ExtResource("18_62atk")])
+castle_prop_scenes = Array[PackedScene]([ExtResource("19_i7in8"), ExtResource("20_gkmcc")])
+castle_asset_scale = 2.0
+pillar_min_row_gap = 20.0
+
+[node name="Player" parent="World" unique_id=2077794924 instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+jump_height = 6.0
+jump_duration = 1.5
+jump_cooldown = 1.5
+drift_charge_threshold = 0.8
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=362234054]
+script = ExtResource("3_camrig")
+target_path = NodePath("../World/Player")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=1562993093]
+physics_interpolation_mode = 2
+current = true
+
+[node name="MoonRig" type="Node3D" parent="." unique_id=159039931]
+script = ExtResource("6_moonrig")
+target_path = NodePath("../World/Player")
+ocean_material = SubResource("ShaderMaterial_ocean")
+environment = SubResource("Environment_main")
+
+[node name="MoonPivot" type="Node3D" parent="MoonRig" unique_id=1290584891]
+
+[node name="Moon" type="MeshInstance3D" parent="MoonRig/MoonPivot" unique_id=215787618]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, -150)
+mesh = SubResource("SphereMesh_moon")
+surface_material_override/0 = SubResource("StdMat_moon")
+
+[node name="Moonlight" type="DirectionalLight3D" parent="MoonRig" unique_id=371758196]
+light_energy = 0.8
+
+[node name="SpeedLinesLayer" type="CanvasLayer" parent="." unique_id=1740054588]
+
+[node name="SpeedLines" type="ColorRect" parent="SpeedLinesLayer" unique_id=344455420]
+material = SubResource("ShaderMaterial_speedlines")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_speedlines")
+target_path = NodePath("../../World/Player")
+
+[node name="HUD" parent="." unique_id=662133598 instance=ExtResource("12_hud")]
+player_path = NodePath("../World/Player")
+moon_energy_node_name = null
+
+[node name="IntroSequence" type="Node" parent="." unique_id=-1400496136]
+script = ExtResource("11_introsequence")
+camera_rig_path = NodePath("../CameraRig")
+player_path = NodePath("../World/Player")
+hud_path = NodePath("../HUD")
+
+[node name="DeathSequence" type="Node" parent="." unique_id=-1400496200]
+script = ExtResource("22_deathsequence")
+camera_rig_path = NodePath("../CameraRig")
+player_path = NodePath("../World/Player")
+hud_path = NodePath("../HUD")

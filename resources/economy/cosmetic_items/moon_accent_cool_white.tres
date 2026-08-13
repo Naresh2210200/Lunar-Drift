@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CosmeticItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/economy/cosmetic_item.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = "moon_accent_cool_white"
+display_name = "Cool White Moonlight"
+category = 2
+cost = 120
+description = "A cooler tint to the moon's glow. Still subtle — no saturated color."

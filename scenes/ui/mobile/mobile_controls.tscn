@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://c2lm674t1kjh2"]
+
+[ext_resource type="Script" uid="uid://dvu04fneltd0t" path="res://scenes/ui/mobile/round_touch_button.gd" id="1"]
+[ext_resource type="Script" uid="uid://bm0mxbt8ypv2r" path="res://scenes/ui/mobile/cooldown_ring.gd" id="2"]
+[ext_resource type="Script" uid="uid://csuujxlsagis7" path="res://scenes/ui/mobile/mobile_input_controller.gd" id="3"]
+
+[node name="MobileControls" type="CanvasLayer" unique_id=708926766]
+layer = 10
+
+[node name="LeftTouchZone" type="Control" parent="." unique_id=762273488]
+layout_mode = 3
+anchor_top = 0.2
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -187.0
+mouse_filter = 2
+
+[node name="RightTouchZone" type="Control" parent="." unique_id=1331456198]
+layout_mode = 3
+anchor_left = 0.5
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -187.0
+mouse_filter = 2
+
+[node name="JumpButton" type="Control" parent="." unique_id=116208957]
+layout_mode = 3
+anchor_left = 0.169
+anchor_top = 0.743
+anchor_right = 0.169
+anchor_bottom = 0.743
+offset_left = -124.48001
+offset_top = -152.43994
+offset_right = 116.0
+offset_bottom = 87.56006
+mouse_filter = 2
+script = ExtResource("1")
+
+[node name="CooldownCircle" type="Control" parent="JumpButton" unique_id=220527346]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -0.480011
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2")
+
+[node name="BoostButton" type="Control" parent="." unique_id=1383912839]
+layout_mode = 3
+anchor_left = 0.81100005
+anchor_top = 0.60200006
+anchor_right = 0.93600005
+anchor_bottom = 0.82
+offset_left = -0.12011719
+offset_top = -0.16003418
+offset_right = -0.12011719
+offset_bottom = 4.4000244
+mouse_filter = 2
+script = ExtResource("1")
+icon = 1
+
+[node name="PauseButton" type="Control" parent="." unique_id=1567624818]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -55.0
+offset_top = 10.0
+offset_right = 55.0
+offset_bottom = 120.0
+mouse_filter = 2
+script = ExtResource("1")
+icon = 2
+idle_alpha = 0.4
+
+[node name="MobileInputController" type="Node" parent="." unique_id=2026530190]
+script = ExtResource("3")

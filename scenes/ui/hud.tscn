@@ -1,0 +1,293 @@
+[gd_scene format=3 uid="uid://c8k2n5xhud001"]
+
+[ext_resource type="Script" uid="uid://buow34ato014t" path="res://scenes/ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/continue_prompt.tscn" id="2_continue_prompt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_barbg"]
+bg_color = Color(0.97, 0.97, 0.98, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.15)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.97, 0.97, 0.98, 0.96)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.92, 0.92, 0.93, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="HUD" type="CanvasLayer" unique_id=340273113]
+process_mode = 3
+script = ExtResource("1_hud")
+
+[node name="EnergyBarBg" type="Panel" parent="." unique_id=676597883]
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 460.0
+offset_bottom = 92.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_barbg")
+
+[node name="EnergyBarFill" type="ColorRect" parent="EnergyBarBg" unique_id=412099365]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 414.0
+offset_bottom = 46.0
+color = Color(0.05, 0.05, 0.06, 1)
+
+[node name="BoostMeterBg" type="Panel" parent="." unique_id=1901335905]
+offset_left = 40.0
+offset_top = 106.0
+offset_right = 300.0
+offset_bottom = 148.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_barbg")
+
+[node name="BoostMeterFill" type="ColorRect" parent="BoostMeterBg" unique_id=437209184]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 254.0
+offset_bottom = 36.0
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="BoostLabel" type="Label" parent="." unique_id=1217760607]
+offset_left = 312.0
+offset_top = 106.0
+offset_right = 460.0
+offset_bottom = 148.0
+theme_override_colors/font_color = Color(0.3, 0.3, 0.32, 1)
+theme_override_font_sizes/font_size = 20
+text = "BOOST"
+vertical_alignment = 1
+
+[node name="JumpMeterBg" type="Panel" parent="." unique_id=500600419]
+offset_left = 40.0
+offset_top = 162.0
+offset_right = 300.0
+offset_bottom = 204.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_barbg")
+
+[node name="JumpMeterFill" type="ColorRect" parent="JumpMeterBg" unique_id=712987851]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 254.0
+offset_bottom = 36.0
+color = Color(0.3, 0.3, 0.32, 1)
+
+[node name="JumpLabel" type="Label" parent="." unique_id=2090577002]
+offset_left = 312.0
+offset_top = 162.0
+offset_right = 460.0
+offset_bottom = 204.0
+theme_override_colors/font_color = Color(0.3, 0.3, 0.32, 1)
+theme_override_font_sizes/font_size = 20
+text = "JUMP"
+vertical_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="." unique_id=311702628]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
+offset_top = 40.0
+offset_right = -40.0
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 52
+text = "0"
+horizontal_alignment = 2
+
+[node name="ShardLabel" type="Label" parent="." unique_id=682709738]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -440.0
+offset_top = 112.0
+offset_right = -40.0
+offset_bottom = 156.0
+theme_override_colors/font_color = Color(0.3, 0.3, 0.32, 1)
+theme_override_font_sizes/font_size = 26
+text = "0 Shards"
+horizontal_alignment = 2
+
+[node name="GoodLuckLabel" type="Label" parent="." unique_id=1980995602]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -36.0
+offset_right = 280.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 56
+text = "Good Luck"
+horizontal_alignment = 1
+
+[node name="GameOverPanel" type="Panel" parent="." unique_id=940675823]
+visible = false
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -260.0
+offset_right = 300.0
+offset_bottom = 340.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="GameOverLabel" type="Label" parent="GameOverPanel" unique_id=1843066186]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 36.0
+offset_right = 576.0
+offset_bottom = 96.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 44
+text = "Run Complete"
+horizontal_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="GameOverPanel" unique_id=1275834581]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 130.0
+offset_right = 576.0
+offset_bottom = 180.0
+theme_override_colors/font_color = Color(0.2, 0.2, 0.22, 1)
+theme_override_font_sizes/font_size = 30
+text = "Distance: 0 m"
+horizontal_alignment = 1
+
+[node name="NewBestLabel" type="Label" parent="GameOverPanel" unique_id=1521789653]
+visible = false
+layout_mode = 0
+offset_left = 24.0
+offset_top = 190.0
+offset_right = 576.0
+offset_bottom = 232.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 26
+text = "New Best!"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="GameOverPanel" unique_id=1526319480]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 270.0
+offset_right = 450.0
+offset_bottom = 344.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Fold Again"
+
+[node name="MainMenuButton" type="Button" parent="GameOverPanel" unique_id=550080910]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 358.0
+offset_right = 450.0
+offset_bottom = 432.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Main Menu"
+
+[node name="PausePanel" type="Panel" parent="." unique_id=638695348]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -220.0
+offset_right = 260.0
+offset_bottom = 220.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PausedLabel" type="Label" parent="PausePanel" unique_id=1616417920]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 36.0
+offset_right = 496.0
+offset_bottom = 92.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 40
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PausePanel" unique_id=164987640]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 140.0
+offset_right = 410.0
+offset_bottom = 214.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Resume"
+
+[node name="MainMenuButton" type="Button" parent="PausePanel" unique_id=992881932]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 232.0
+offset_right = 410.0
+offset_bottom = 306.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Main Menu"
+
+[node name="ContinuePrompt" parent="." instance=ExtResource("2_continue_prompt")]

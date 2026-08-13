@@ -1,0 +1,551 @@
+[gd_scene format=3 uid="uid://d4m1n2menu001"]
+
+[ext_resource type="Script" uid="uid://d1friutresibe" path="res://scenes/ui/main_menu.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://6wotyhbdo664" path="res://assets/Font/Driftline.ttf" id="4_m1kxf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_moon_glow_outer"]
+bg_color = Color(0.9, 0.9, 0.92, 0.12)
+corner_radius_top_left = 200
+corner_radius_top_right = 200
+corner_radius_bottom_right = 200
+corner_radius_bottom_left = 200
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_moon_glow_mid"]
+bg_color = Color(0.93, 0.93, 0.95, 0.2)
+corner_radius_top_left = 160
+corner_radius_top_right = 160
+corner_radius_bottom_right = 160
+corner_radius_bottom_left = 160
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_moon_body"]
+bg_color = Color(0.97, 0.97, 0.98, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 110
+corner_radius_top_right = 110
+corner_radius_bottom_right = 110
+corner_radius_bottom_left = 110
+shadow_color = Color(0, 0, 0, 0.15)
+shadow_size = 16
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font = ExtResource("4_m1kxf")
+font_size = 150
+font_color = Color(0.05, 0.05, 0.06, 1)
+outline_size = 8
+outline_color = Color(1, 1, 1, 0.9)
+shadow_size = 10
+shadow_color = Color(0, 0, 0, 0.15)
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="LabelSettings" id="LabelSettings_dash"]
+font_size = 80
+font_color = Color(0.3, 0.3, 0.32, 0.7)
+
+[sub_resource type="LabelSettings" id="LabelSettings_tagline"]
+font_size = 20
+font_color = Color(0.3, 0.3, 0.32, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_list_btn"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.15)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_list_btn_hover"]
+bg_color = Color(0.92, 0.92, 0.93, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_btn"]
+bg_color = Color(0.05, 0.05, 0.06, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_btn_hover"]
+bg_color = Color(0.18, 0.18, 0.2, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toast"]
+bg_color = Color(0.97, 0.97, 0.98, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings_panel"]
+bg_color = Color(0.97, 0.97, 0.98, 0.98)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_btn"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_btn_hover"]
+bg_color = Color(0.92, 0.92, 0.93, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.05, 0.05, 0.06, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="main menu" type="Control" unique_id=678492228]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="PaperBg" type="ColorRect" parent="." unique_id=1739897147]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.97, 0.97, 0.98, 1)
+
+[node name="MoonDecor" type="Control" parent="." unique_id=1523462398]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -426.0
+offset_top = 81.0
+offset_right = -106.0
+offset_bottom = 401.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="GlowOuter" type="Panel" parent="MoonDecor" unique_id=723453528]
+modulate = Color(0.9, 0.9, 0.92, 0.2413435)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -160.0
+offset_right = 200.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_moon_glow_outer")
+
+[node name="GlowMid" type="Panel" parent="MoonDecor" unique_id=1400805044]
+modulate = Color(0.93, 0.93, 0.95, 0.3365115)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -160.0
+offset_right = 160.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_moon_glow_mid")
+
+[node name="MoonBody" type="Panel" parent="MoonDecor" unique_id=1275093785]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -110.0
+offset_right = 110.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.0189599, 1.0189599)
+pivot_offset = Vector2(110, 110)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_moon_body")
+
+[node name="TitleArea" type="Control" parent="." unique_id=2000157179]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 191.0
+offset_bottom = 407.0
+grow_horizontal = 2
+
+[node name="TitleRow" type="HBoxContainer" parent="TitleArea" unique_id=578098903]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_right = 260.0
+offset_bottom = 96.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="TitleArea/TitleRow" unique_id=236464256]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 52
+text = "LUNAR DRIFT"
+label_settings = SubResource("LabelSettings_title")
+vertical_alignment = 1
+
+[node name="TaglineRow" type="HBoxContainer" parent="TitleArea" unique_id=928943160]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -259.0
+offset_top = 118.0
+offset_right = 181.0
+offset_bottom = 226.0
+grow_horizontal = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="DashLeft" type="Label" parent="TitleArea/TaglineRow" unique_id=1099421890]
+layout_mode = 2
+text = "──"
+label_settings = SubResource("LabelSettings_dash")
+
+[node name="TaglineLabel" type="Label" parent="TitleArea/TaglineRow" unique_id=1112005771]
+layout_mode = 2
+text = "DRIFT. DODGE. DOMINATE."
+label_settings = SubResource("LabelSettings_tagline")
+
+[node name="DashRight" type="Label" parent="TitleArea/TaglineRow" unique_id=1008334500]
+layout_mode = 2
+text = "──"
+label_settings = SubResource("LabelSettings_dash")
+
+[node name="ButtonColumn" type="VBoxContainer" parent="." unique_id=918247235]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.42
+anchor_right = 0.24
+anchor_bottom = 0.66
+offset_left = 54.0
+offset_top = -18.399963
+offset_right = -22.799988
+offset_bottom = 55.19995
+grow_vertical = 2
+theme_override_constants/separation = 18
+
+[node name="SettingsButton" type="Button" parent="ButtonColumn" unique_id=563257302]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_list_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_list_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_list_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_list_btn_hover")
+text = "SETTINGS"
+
+[node name="ShopButton" type="Button" parent="ButtonColumn" unique_id=1295228232]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_list_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_list_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_list_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_list_btn_hover")
+text = "SHOP"
+
+[node name="ExitButton" type="Button" parent="ButtonColumn" unique_id=748941266]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_list_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_list_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_list_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_list_btn_hover")
+text = "EXIT"
+
+[node name="PlayButton" type="Button" parent="." unique_id=1869831508]
+custom_minimum_size = Vector2(340, 110)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -397.0
+offset_top = -168.0
+offset_right = -25.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.97, 0.97, 0.98, 1)
+theme_override_colors/font_focus_color = Color(0.97, 0.97, 0.98, 1)
+theme_override_colors/font_pressed_color = Color(0.97, 0.97, 0.98, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_play_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_play_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_play_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_play_btn_hover")
+text = "PLAY"
+
+[node name="FooterLeft" type="Control" parent="." unique_id=47995249]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -48.0
+offset_right = 220.0
+offset_bottom = -16.0
+grow_vertical = 0
+
+[node name="VersionLabel" type="Label" parent="FooterLeft" unique_id=150225247]
+layout_mode = 0
+offset_right = 192.0
+offset_bottom = 32.0
+theme_override_colors/font_color = Color(0.3, 0.3, 0.32, 0.65)
+theme_override_font_sizes/font_size = 18
+text = "v0.1.0"
+
+[node name="FooterRight" type="Control" parent="." unique_id=2124324595]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -210.0
+offset_right = -28.0
+offset_bottom = -178.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="HighScoreLabel" type="Label" parent="FooterRight" unique_id=2130856360]
+layout_mode = 0
+offset_left = -66.0
+offset_top = -26.0
+offset_right = 226.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 0.85)
+theme_override_font_sizes/font_size = 48
+text = "Best: 0 m"
+horizontal_alignment = 2
+
+[node name="Toast" type="Panel" parent="." unique_id=1553637657]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 210.0
+offset_right = 160.0
+offset_bottom = 258.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_toast")
+
+[node name="ToastLabel" type="Label" parent="Toast" unique_id=1172919101]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 20
+text = "Coming soon"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SettingsBackdrop" type="ColorRect" parent="." unique_id=-2094852819]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.4)
+
+[node name="SettingsPanel" type="Panel" parent="." unique_id=-2094852818]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -150.0
+offset_right = 230.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_settings_panel")
+
+[node name="Layout" type="VBoxContainer" parent="SettingsPanel" unique_id=-2094852817]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="SettingsPanel/Layout" unique_id=-2094852816]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 26
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="SoundRow" type="HBoxContainer" parent="SettingsPanel/Layout" unique_id=-2094852815]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SoundLabel" type="Label" parent="SettingsPanel/Layout/SoundRow" unique_id=-2094852814]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
+theme_override_font_sizes/font_size = 20
+text = "Sound"
+vertical_alignment = 1
+
+[node name="SoundToggleButton" type="Button" parent="SettingsPanel/Layout/SoundRow" unique_id=-2094852813]
+custom_minimum_size = Vector2(110, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_toggle_btn_hover")
+text = "ON"
+
+[node name="FullscreenRow" type="HBoxContainer" parent="SettingsPanel/Layout" unique_id=-2094852812]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FullscreenLabel" type="Label" parent="SettingsPanel/Layout/FullscreenRow" unique_id=-2094852811]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
+theme_override_font_sizes/font_size = 20
+text = "Fullscreen"
+vertical_alignment = 1
+
+[node name="FullscreenToggleButton" type="Button" parent="SettingsPanel/Layout/FullscreenRow" unique_id=-2094852810]
+custom_minimum_size = Vector2(110, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_toggle_btn_hover")
+text = "OFF"
+
+[node name="CloseButton" type="Button" parent="SettingsPanel/Layout" unique_id=-2094852809]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_toggle_btn_hover")
+text = "CLOSE"

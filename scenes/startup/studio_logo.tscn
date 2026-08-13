@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://dc85ec1h315s5"]
+
+[ext_resource type="Script" uid="uid://qdkroet88qe7" path="res://scenes/startup/studio_logo.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/transitions/fade_transition.tscn" id="2"]
+[ext_resource type="AudioStream" uid="uid://yn4o05bf4pcq" path="res://assets/audio/opening_sound.mp3" id="2_yhxwy"]
+
+[node name="StudioLogo" type="Control" unique_id=1369588730]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1199132976]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Glow" type="TextureRect" parent="." unique_id=1509158813]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -344.0
+offset_top = -330.5
+offset_right = 344.0
+offset_bottom = 330.5
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 4
+
+[node name="LogoLabel" type="Label" parent="." unique_id=297986034]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -585.5
+offset_top = -75.5
+offset_right = 585.5
+offset_bottom = 75.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 150
+text = "THE 21ST STUDIO"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AmbientSound" type="AudioStreamPlayer" parent="." unique_id=1546423618]
+stream = ExtResource("2_yhxwy")
+
+[node name="FadeTransition" parent="." unique_id=1438094161 instance=ExtResource("2")]

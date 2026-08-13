@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://cxmsyl1l24msd"]
+
+[ext_resource type="Script" uid="uid://c1db70oo7c57w" path="res://scenes/startup/loading_screen.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/transitions/fade_transition.tscn" id="2"]
+[ext_resource type="AudioStream" uid="uid://yn4o05bf4pcq" path="res://assets/audio/opening_sound.mp3" id="3_snd"]
+
+[node name="LoadingScreen" type="Control" unique_id=1444703840]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="." unique_id=564191125]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MoonGlow" type="TextureRect" parent="." unique_id=1612957558]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -447.5
+offset_top = -373.75
+offset_right = 447.5
+offset_bottom = 373.75
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 4
+
+[node name="TitleLabel" type="Label" parent="." unique_id=2134009745]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -40.0
+offset_right = 320.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 200
+text = "LUNAR DRIFT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LoadingLabel" type="Label" parent="." unique_id=199394673]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -60.0
+offset_right = 100.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 64
+text = "Loading"
+horizontal_alignment = 1
+
+[node name="AmbientSound" type="AudioStreamPlayer" parent="." unique_id=1071384562]
+stream = ExtResource("3_snd")
+
+[node name="FadeTransition" parent="." unique_id=276828362 instance=ExtResource("2")]
