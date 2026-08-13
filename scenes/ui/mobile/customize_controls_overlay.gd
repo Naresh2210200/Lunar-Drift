@@ -1,9 +1,20 @@
-extends CanvasLayer
+extends Node
 ## scenes/ui/mobile/customize_controls_overlay.gd
 ##
 ## The "Customize Controls" screen. Opened from Settings (see
 ## main_menu.gd's _on_customize_controls_pressed) — deliberately does
 ## NOT require GameManager to be PLAYING and does not touch it at all.
+##
+## Root is a plain Node (not a CanvasLayer) holding two CanvasLayer
+## children so the buttons stand out clearly while dragging instead of
+## fighting whatever busy menu/gameplay background happens to be
+## showing underneath:
+## - Backdrop (layer 9): a flat, full-screen background — sits just
+##   BELOW MobileControls' own CanvasLayer (layer 10, see
+##   mobile_controls.tscn), so it blanks out everything behind it
+##   while still letting the real buttons draw on top of it.
+## - UI (layer 15): the instruction bar and bottom panel (selection
+##   label, size/opacity sliders, Reset/Done) — above the buttons.
 ##
 ## Doesn't create a second set of buttons to drag around. Instead it
 ## reaches into the ALREADY-instanced MobileControls layer (see
@@ -34,12 +45,12 @@ const BUTTON_LABELS: Dictionary = {
 	&"pause": "Pause",
 }
 
-@onready var _instruction_label: Label = $TopBar/InstructionLabel
-@onready var _selected_label: Label = $BottomPanel/Layout/SelectedRow/SelectedLabel
-@onready var _size_slider: HSlider = $BottomPanel/Layout/SizeRow/SizeSlider
-@onready var _opacity_slider: HSlider = $BottomPanel/Layout/OpacityRow/OpacitySlider
-@onready var _reset_button: Button = $BottomPanel/Layout/ButtonRow/ResetButton
-@onready var _done_button: Button = $BottomPanel/Layout/ButtonRow/DoneButton
+@onready var _instruction_label: Label = $UI/TopBar/InstructionLabel
+@onready var _selected_label: Label = $UI/BottomPanel/Layout/SelectedRow/SelectedLabel
+@onready var _size_slider: HSlider = $UI/BottomPanel/Layout/SizeRow/SizeSlider
+@onready var _opacity_slider: HSlider = $UI/BottomPanel/Layout/OpacityRow/OpacitySlider
+@onready var _reset_button: Button = $UI/BottomPanel/Layout/ButtonRow/ResetButton
+@onready var _done_button: Button = $UI/BottomPanel/Layout/ButtonRow/DoneButton
 
 var _mobile_controls: CanvasLayer = null
 var _buttons: Dictionary = {}       # StringName -> Control
@@ -52,8 +63,6 @@ var _drag_start_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
-	layer = 15  # above MobileControls (layer 10, see mobile_controls.tscn)
-
 	_mobile_controls = MobileControlsLoader.mobile_controls
 	if _mobile_controls == null:
 		# Touch platform only (see mobile_controls_loader.gd) — on desktop

@@ -1274,30 +1274,48 @@ func _make_castle_wall_piece() -> Node3D:
 	if castle_wall_scenes.is_empty():
 		return _make_pillar()
 
-	var scene: PackedScene = castle_wall_scenes[_rng.randi_range(0, castle_wall_scenes.size() - 1)]
-	var visual: Node3D = scene.instantiate()
-	visual.scale = Vector3.ONE * castle_asset_scale
+	# Perf fix: this used to instantiate() a fresh copy of the real FBX
+	# scene (plus a full tree-walk in _get_visual_aabb) on EVERY spawn and
+	# queue_free() it on every chunk recycle — the only builder in this
+	# file that bypassed the node pool. In an endless runner recycling ~15
+	# active chunks continuously, that's a steady stream of heavy
+	# alloc/free churn, which is what was reading as stutter/lost
+	# smoothness on device. Pooled per scene index now, same as every
+	# other builder here — same signature (same source asset) always
+	# means same AABB/collision box, so it's safe to reuse untouched.
+	var scene_index := _rng.randi_range(0, castle_wall_scenes.size() - 1)
+	var sig := "castle_wall_%d" % scene_index
 
-	var area := Area3D.new()
-	area.add_to_group("obstacle")
-	area.add_child(visual)
+	var area := _acquire_pooled(sig)
+	if area == null:
+		var scene: PackedScene = castle_wall_scenes[scene_index]
+		var visual: Node3D = scene.instantiate()
+		visual.name = "Visual"
+		visual.scale = Vector3.ONE * castle_asset_scale
 
-	# Real FBX imports don't come with a pre-set .size the way this
-	# file's primitive meshes do (BoxMesh.size, PrismMesh.size, etc.), so
-	# the hitbox is derived from the instanced scene's own visual bounds
-	# via _get_visual_aabb instead of a hand-tuned constant per asset —
-	# same 0.85 shrink-to-visible-footprint factor _make_pillar()/
-	# _make_cliff() already use, so it doesn't feel unfair relative to
-	# the rest of the obstacle roster.
-	var aabb := _get_visual_aabb(visual)
-	var collision := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
-	shape.size = aabb.size * castle_asset_scale * Vector3(0.85, 1.0, 0.85)
-	collision.shape = shape
-	collision.position = (aabb.position + aabb.size * 0.5) * castle_asset_scale
-	area.add_child(collision)
+		area = Area3D.new()
+		area.add_to_group("obstacle")
+		area.add_child(visual)
 
-	area.body_entered.connect(_on_obstacle_body_entered)
+		# Real FBX imports don't come with a pre-set .size the way this
+		# file's primitive meshes do (BoxMesh.size, PrismMesh.size, etc.), so
+		# the hitbox is derived from the instanced scene's own visual bounds
+		# via _get_visual_aabb instead of a hand-tuned constant per asset —
+		# same 0.85 shrink-to-visible-footprint factor _make_pillar()/
+		# _make_cliff() already use, so it doesn't feel unfair relative to
+		# the rest of the obstacle roster. Only run once per pooled node now
+		# (on first build), not on every spawn.
+		var aabb := _get_visual_aabb(visual)
+		var collision := CollisionShape3D.new()
+		var shape := BoxShape3D.new()
+		shape.size = aabb.size * castle_asset_scale * Vector3(0.85, 1.0, 0.85)
+		collision.shape = shape
+		collision.position = (aabb.position + aabb.size * 0.5) * castle_asset_scale
+		area.add_child(collision)
+
+		area.body_entered.connect(_on_obstacle_body_entered)
+		area.set_meta("pool_sig", sig)
+
 	return area
 
 
@@ -1351,9 +1369,18 @@ func _get_visual_aabb(root: Node3D) -> AABB:
 func _spawn_castle_landmark(container: Node3D, half: float) -> void:
 	if castle_landmark_scenes.is_empty():
 		return
-	var scene: PackedScene = castle_landmark_scenes[_rng.randi_range(0, castle_landmark_scenes.size() - 1)]
-	var landmark: Node3D = scene.instantiate()
-	landmark.scale = Vector3.ONE * castle_asset_scale
+	# Perf fix: pooled now instead of instantiate()/queue_free() every
+	# chunk — see _make_castle_wall_piece for why. Decorative-only, no
+	# Area3D, so the generic _acquire_pooled/_release_to_pool path just
+	# needs visibility toggling, which it already does.
+	var scene_index := _rng.randi_range(0, castle_landmark_scenes.size() - 1)
+	var sig := "castle_landmark_%d" % scene_index
+	var landmark := _acquire_pooled(sig)
+	if landmark == null:
+		var scene: PackedScene = castle_landmark_scenes[scene_index]
+		landmark = scene.instantiate()
+		landmark.scale = Vector3.ONE * castle_asset_scale
+		landmark.set_meta("pool_sig", sig)
 	landmark.position = Vector3(
 		_rng.randf_range(-half * 0.7, half * 0.7), 0.0, _rng.randf_range(-half, half)
 	)
@@ -1373,9 +1400,16 @@ func _populate_castle_props(container: Node3D, half: float, safe_zones: Array) -
 	var prop_count := _rng.randi_range(0, 2)
 	var placed: Array[Vector2] = []
 	for i in prop_count:
-		var scene: PackedScene = castle_prop_scenes[_rng.randi_range(0, castle_prop_scenes.size() - 1)]
-		var prop: Node3D = scene.instantiate()
-		prop.scale = Vector3.ONE * castle_asset_scale
+		# Perf fix: pooled now instead of instantiate()/queue_free() every
+		# chunk — see _make_castle_wall_piece for why.
+		var scene_index := _rng.randi_range(0, castle_prop_scenes.size() - 1)
+		var sig := "castle_prop_%d" % scene_index
+		var prop := _acquire_pooled(sig)
+		if prop == null:
+			var scene: PackedScene = castle_prop_scenes[scene_index]
+			prop = scene.instantiate()
+			prop.scale = Vector3.ONE * castle_asset_scale
+			prop.set_meta("pool_sig", sig)
 		var spot := _pick_spaced_position(half, props_min_spacing, props_placement_attempts, placed, safe_zones)
 		placed.append(spot)
 		prop.position = Vector3(spot.x, 0.0, spot.y)

@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://udl8qjlguhpd"]
 
-[ext_resource type="Script" path="res://scenes/ui/mobile/customize_controls_overlay.gd" id="1"]
+[ext_resource type="Script" uid="uid://cv5rh0sqn0ow8" path="res://scenes/ui/mobile/customize_controls_overlay.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top_bar"]
 bg_color = Color(0.97, 0.97, 0.98, 0.92)
@@ -67,18 +67,33 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="CustomizeControlsOverlay" type="CanvasLayer"]
+[node name="CustomizeControlsOverlay" type="Node" unique_id=302102928]
 script = ExtResource("1")
 
-[node name="TopBar" type="Panel" parent="."]
+[node name="Backdrop" type="CanvasLayer" parent="." unique_id=807878281]
+layer = 9
+
+[node name="Background" type="ColorRect" parent="Backdrop" unique_id=957728825]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
+color = Color(0.97, 0.97, 0.98, 1)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1787587988]
+layer = 15
+
+[node name="TopBar" type="Panel" parent="UI" unique_id=1948603571]
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 64.0
+offset_bottom = 197.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_top_bar")
 
-[node name="InstructionLabel" type="Label" parent="TopBar"]
+[node name="InstructionLabel" type="Label" parent="UI/TopBar" unique_id=1078950779]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -88,24 +103,27 @@ offset_right = -16.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 80
 text = "Drag a button to move it."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="BottomPanel" type="Panel" parent="."]
-mouse_filter = 2
+[node name="BottomPanel" type="Panel" parent="UI" unique_id=1643570081]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -220.0
+offset_left = 674.0
+offset_top = -342.0
+offset_right = -515.0
+offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bottom_panel")
 
-[node name="Layout" type="VBoxContainer" parent="BottomPanel"]
+[node name="Layout" type="VBoxContainer" parent="UI/BottomPanel" unique_id=1722093307]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -118,30 +136,30 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
 
-[node name="SelectedRow" type="HBoxContainer" parent="BottomPanel/Layout"]
+[node name="SelectedRow" type="HBoxContainer" parent="UI/BottomPanel/Layout" unique_id=1924680533]
 layout_mode = 2
 
-[node name="SelectedLabel" type="Label" parent="BottomPanel/Layout/SelectedRow"]
+[node name="SelectedLabel" type="Label" parent="UI/BottomPanel/Layout/SelectedRow" unique_id=1016357713]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 40
 text = "Selected: Jump"
 
-[node name="SizeRow" type="HBoxContainer" parent="BottomPanel/Layout"]
+[node name="SizeRow" type="HBoxContainer" parent="UI/BottomPanel/Layout" unique_id=1227909577]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="SizeLabel" type="Label" parent="BottomPanel/Layout/SizeRow"]
+[node name="SizeLabel" type="Label" parent="UI/BottomPanel/Layout/SizeRow" unique_id=694679476]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 40
 text = "Size"
 vertical_alignment = 1
 
-[node name="SizeSlider" type="HSlider" parent="BottomPanel/Layout/SizeRow"]
-custom_minimum_size = Vector2(0, 32)
+[node name="SizeSlider" type="HSlider" parent="UI/BottomPanel/Layout/SizeRow" unique_id=626778815]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.7
@@ -149,20 +167,20 @@ max_value = 1.6
 step = 0.01
 value = 1.0
 
-[node name="OpacityRow" type="HBoxContainer" parent="BottomPanel/Layout"]
+[node name="OpacityRow" type="HBoxContainer" parent="UI/BottomPanel/Layout" unique_id=2063171406]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="OpacityLabel" type="Label" parent="BottomPanel/Layout/OpacityRow"]
+[node name="OpacityLabel" type="Label" parent="UI/BottomPanel/Layout/OpacityRow" unique_id=320720705]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 40
 text = "Opacity"
 vertical_alignment = 1
 
-[node name="OpacitySlider" type="HSlider" parent="BottomPanel/Layout/OpacityRow"]
-custom_minimum_size = Vector2(0, 32)
+[node name="OpacitySlider" type="HSlider" parent="UI/BottomPanel/Layout/OpacityRow" unique_id=994294849]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.15
@@ -170,25 +188,25 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="ButtonRow" type="HBoxContainer" parent="BottomPanel/Layout"]
+[node name="ButtonRow" type="HBoxContainer" parent="UI/BottomPanel/Layout" unique_id=1988223338]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="ResetButton" type="Button" parent="BottomPanel/Layout/ButtonRow"]
+[node name="ResetButton" type="Button" parent="UI/BottomPanel/Layout/ButtonRow" unique_id=1379367939]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 theme_override_styles/focus = SubResource("StyleBoxFlat_btn_hover")
 text = "RESET"
 
-[node name="DoneButton" type="Button" parent="BottomPanel/Layout/ButtonRow"]
+[node name="DoneButton" type="Button" parent="UI/BottomPanel/Layout/ButtonRow" unique_id=1297427393]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -196,7 +214,7 @@ mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.97, 0.97, 0.98, 1)
 theme_override_colors/font_pressed_color = Color(0.97, 0.97, 0.98, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_done_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_done_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_done_btn_hover")

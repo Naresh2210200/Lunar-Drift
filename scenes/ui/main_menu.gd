@@ -193,7 +193,7 @@ func _on_customize_controls_pressed() -> void:
 		_show_toast("Mobile controls aren't available on this device")
 		return
 	_close_settings()
-	var overlay: CanvasLayer = load(CUSTOMIZE_CONTROLS_SCENE_PATH).instantiate()
+	var overlay: Node = load(CUSTOMIZE_CONTROLS_SCENE_PATH).instantiate()
 	get_tree().root.add_child(overlay)
 
 
