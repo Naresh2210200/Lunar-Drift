@@ -314,7 +314,7 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_list_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_list_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_list_btn_hover")
@@ -327,7 +327,7 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_list_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_list_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_list_btn_hover")
@@ -340,7 +340,7 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_list_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_list_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_list_btn_hover")
@@ -462,9 +462,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -230.0
-offset_top = -150.0
+offset_top = -195.0
 offset_right = 230.0
-offset_bottom = 150.0
+offset_bottom = 195.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_settings_panel")
@@ -485,7 +485,7 @@ theme_override_constants/separation = 16
 [node name="TitleLabel" type="Label" parent="SettingsPanel/Layout" unique_id=-2094852816]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 40
 text = "SETTINGS"
 horizontal_alignment = 1
 
@@ -497,7 +497,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 text = "Sound"
 vertical_alignment = 1
 
@@ -506,7 +506,7 @@ custom_minimum_size = Vector2(110, 56)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")
@@ -521,7 +521,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 text = "Fullscreen"
 vertical_alignment = 1
 
@@ -530,12 +530,36 @@ custom_minimum_size = Vector2(110, 56)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")
 theme_override_styles/focus = SubResource("StyleBoxFlat_toggle_btn_hover")
 text = "OFF"
+
+[node name="ControlsRow" type="HBoxContainer" parent="SettingsPanel/Layout" unique_id=296880019]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ControlsLabel" type="Label" parent="SettingsPanel/Layout/ControlsRow" unique_id=1983244844]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.1, 0.1, 0.12, 1)
+theme_override_font_sizes/font_size = 40
+text = "Controls"
+vertical_alignment = 1
+
+[node name="CustomizeControlsButton" type="Button" parent="SettingsPanel/Layout/ControlsRow" unique_id=87144623]
+custom_minimum_size = Vector2(160, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_toggle_btn_hover")
+text = "CUSTOMIZE"
 
 [node name="CloseButton" type="Button" parent="SettingsPanel/Layout" unique_id=-2094852809]
 custom_minimum_size = Vector2(0, 56)
@@ -543,7 +567,7 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.06, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_btn_hover")

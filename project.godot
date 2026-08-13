@@ -24,6 +24,7 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 GameManager="*uid://b7rqh2mvdkdqk"
 HighScoreManager="*uid://cuu502gygxcvw"
 EconomyManager="*uid://cgqysykspl3hd"
+MobileControls="*res://autoloads/mobile_controls.gd"
 MobileControlsLoader="*uid://c68ni05rnh81"
 AudioManager="*uid://8erjx8fs5su"
 ThemeManager="*uid://cpvbib3dvv0n3"

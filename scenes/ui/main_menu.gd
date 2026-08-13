@@ -15,6 +15,7 @@ extends Control
 const MAIN_SCENE_PATH := "res://scenes/main/main.tscn"
 const SHOP_SCENE_PATH := "res://scenes/ui/shop.tscn"
 const LOADING_SCENE_PATH := "res://scenes/ui/loading_screen.tscn"
+const CUSTOMIZE_CONTROLS_SCENE_PATH := "res://scenes/ui/mobile/customize_controls_overlay.tscn"
 
 @export var reveal_fade_duration: float = 0.6
 @export var button_stagger: float = 0.07
@@ -31,6 +32,7 @@ const LOADING_SCENE_PATH := "res://scenes/ui/loading_screen.tscn"
 @onready var _settings_panel: Panel = $SettingsPanel
 @onready var _sound_toggle_button: Button = $SettingsPanel/Layout/SoundRow/SoundToggleButton
 @onready var _fullscreen_toggle_button: Button = $SettingsPanel/Layout/FullscreenRow/FullscreenToggleButton
+@onready var _customize_controls_button: Button = $SettingsPanel/Layout/ControlsRow/CustomizeControlsButton
 @onready var _settings_close_button: Button = $SettingsPanel/Layout/CloseButton
 @onready var _fade: Node = get_node_or_null("FadeTransition")
 
@@ -52,6 +54,7 @@ func _ready() -> void:
 	_settings_backdrop.gui_input.connect(_on_settings_backdrop_input)
 	_wire_button(_sound_toggle_button, _on_sound_toggled)
 	_wire_button(_fullscreen_toggle_button, _on_fullscreen_toggled)
+	_wire_button(_customize_controls_button, _on_customize_controls_pressed)
 	_wire_button(_exit_button, func(): get_tree().quit())
 	_wire_button(_shop_button, _on_shop_pressed)
 	_wire_button(_play_button, _on_play_pressed)
@@ -177,6 +180,21 @@ func _on_fullscreen_toggled() -> void:
 		DisplayServer.WINDOW_MODE_FULLSCREEN if _fullscreen else DisplayServer.WINDOW_MODE_WINDOWED
 	)
 	_fullscreen_toggle_button.text = "ON" if _fullscreen else "OFF"
+
+
+## Opens the Customize Controls screen straight from Settings — no run in
+## progress, no dependency on GameManager.current_state (see
+## customize_controls_overlay.gd's header comment). MobileControlsLoader
+## only instances the on-screen control layer on touch platforms at all,
+## so on desktop there's nothing to customize; toast instead of opening
+## an overlay with nothing to drag.
+func _on_customize_controls_pressed() -> void:
+	if MobileControlsLoader.mobile_controls == null:
+		_show_toast("Mobile controls aren't available on this device")
+		return
+	_close_settings()
+	var overlay: CanvasLayer = load(CUSTOMIZE_CONTROLS_SCENE_PATH).instantiate()
+	get_tree().root.add_child(overlay)
 
 
 # ---------------------------------------------------------------------

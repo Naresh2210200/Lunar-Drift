@@ -28,6 +28,22 @@ extends Node
 ## disappear during Menu/Paused/Game Over instead of sitting uselessly
 ## on top of those screens, and nothing is left stuck held mid-touch
 ## across a state change.
+##
+## Also listens to the MobileControls autoload (see
+## autoloads/mobile_controls.gd) for two things, both by signal —
+## never polled in _process:
+## - `layout_changed`: applies that button's saved position offset /
+##   scale / opacity to the real node. Fires on load, live while the
+##   Customize Controls screen is open, and once per button right as
+##   customize mode exits (so a discarded edit snaps back).
+## - `customize_mode_changed`: while active, this controller stops
+##   reading touches entirely (see _input's early-return) and forces
+##   the layer visible regardless of GameManager.current_state, so
+##   Customize Controls works from Settings without a run in progress.
+##   The Customize Controls screen owns input on the buttons itself
+##   during this window (see customize_controls_overlay.gd) — this
+##   controller staying out of the way is what stops a drag from also
+##   firing jump/boost/steer.
 
 @export var jump_cooldown_seconds: float = 1.2
 
@@ -38,6 +54,12 @@ extends Node
 @onready var _pause_button: Control = get_node("../PauseButton")
 @onready var _cooldown_ring: Control = get_node("../JumpButton/CooldownCircle")
 
+@onready var _customizable_buttons: Dictionary = {
+	&"jump": _jump_button,
+	&"boost": _boost_button,
+	&"pause": _pause_button,
+}
+
 # touch index (int) -> which control claimed it: "left"/"right"/"jump"/"boost"
 var _touch_owner: Dictionary = {}
 # Ref-counted per held action so N fingers on one zone/button release cleanly
@@ -47,17 +69,35 @@ var _action_hold_counts: Dictionary = {"steer_left": 0, "steer_right": 0, "boost
 var _jump_on_cooldown: bool = false
 var _jump_cooldown_remaining: float = 0.0
 
+var _customize_mode: bool = false
+# button_id -> Rect2(offset_left, offset_top, width, height) captured once,
+# after _apply_safe_area() has already nudged these buttons clear of any
+# notch/cutout. Saved position offsets from MobileControls stack on top of
+# this base rather than replacing it, so safe-area handling and user
+# customization never fight each other.
+var _base_offset_rect: Dictionary = {}
+
 
 func _ready() -> void:
 	_apply_safe_area()
 	_cooldown_ring.set_progress(0.0)
 	set_process(false)
 
+	_capture_base_offsets()
+	_customize_mode = MobileControls.customize_mode
+	for button_id in _customizable_buttons.keys():
+		_apply_button_layout(button_id)
+	MobileControls.layout_changed.connect(_apply_button_layout)
+	MobileControls.customize_mode_changed.connect(_on_customize_mode_changed)
+
 	GameManager.state_changed.connect(_on_game_state_changed)
 	_on_game_state_changed(GameManager.current_state)
 
 
 func _input(event: InputEvent) -> void:
+	if _customize_mode:
+		return  # Customize Controls screen owns input while it's open
+
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			_on_touch_down(event.index, event.position)
@@ -163,10 +203,21 @@ func _process(delta: float) -> void:
 
 
 func _on_game_state_changed(new_state) -> void:
+	if _customize_mode:
+		return  # Customize Controls screen controls visibility while it's open
 	var should_show: bool = new_state == GameManager.GameState.PLAYING
 	get_parent().visible = should_show
 	if not should_show:
 		_release_all_touches()
+
+
+func _on_customize_mode_changed(active: bool) -> void:
+	_customize_mode = active
+	if active:
+		_release_all_touches()  # nothing should stay "held" once gameplay input stops being read
+		get_parent().visible = true
+	else:
+		_on_game_state_changed(GameManager.current_state)
 
 
 ## Clears every in-progress touch/action when controls hide (pause, game
@@ -219,3 +270,39 @@ func _shift_control(control: Control, dx: float, dy: float) -> void:
 	control.offset_right += dx
 	control.offset_top += dy
 	control.offset_bottom += dy
+
+
+# ---------------------------------------------------------------------
+# Saved layout (position/scale/opacity) — see autoloads/mobile_controls.gd.
+# Position is applied as an offset-rect shift (same mechanism as
+# _shift_control/_apply_safe_area above); scale/opacity use the Control's
+# own scale/modulate so round_touch_button.gd's _draw() needs zero changes.
+# ---------------------------------------------------------------------
+
+func _capture_base_offsets() -> void:
+	for button_id in _customizable_buttons.keys():
+		var control: Control = _customizable_buttons[button_id]
+		_base_offset_rect[button_id] = Rect2(
+			control.offset_left,
+			control.offset_top,
+			control.offset_right - control.offset_left,
+			control.offset_bottom - control.offset_top
+		)
+		# Centered scaling: pivot at the rect's own center rather than (0,0).
+		control.pivot_offset = _base_offset_rect[button_id].size / 2.0
+
+
+func _apply_button_layout(button_id: StringName) -> void:
+	if not _customizable_buttons.has(button_id):
+		return  # layout_changed also fires for non-customizable ids; ignore
+	var control: Control = _customizable_buttons[button_id]
+	var base: Rect2 = _base_offset_rect[button_id]
+	var delta: Vector2 = MobileControls.get_offset_delta(button_id)
+
+	control.offset_left = base.position.x + delta.x
+	control.offset_top = base.position.y + delta.y
+	control.offset_right = base.position.x + base.size.x + delta.x
+	control.offset_bottom = base.position.y + base.size.y + delta.y
+
+	control.scale = Vector2.ONE * MobileControls.get_scale(button_id)
+	control.modulate.a = MobileControls.get_opacity(button_id)
