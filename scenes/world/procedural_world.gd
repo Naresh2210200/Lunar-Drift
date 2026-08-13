@@ -317,6 +317,25 @@ enum Biome { ROCKFIELD, WINDMILL, PILLARS, CUBES, CASTLE }
 
 var _rng := RandomNumberGenerator.new()
 var _chunks: Dictionary = {}         # Vector2i (cx, cz) -> Node3D container
+## Perf: every prop/obstacle/collectible builder used to call
+## `StandardMaterial3D.new()` on every single spawn, even though the vast
+## majority of them (paper props, black/near-black spikes, the two Shade
+## colors) always resolve to the exact same albedo/emission values. Fresh
+## Resource instances with identical properties still can't be batched by
+## the renderer and add up to real GC churn given how often chunks recycle
+## (~every 1-2s at normal speed). This cache makes every builder below
+## fetch-or-create by a stable key instead, so equivalent props now share
+## one Material — zero visual change, fewer draw calls, no per-spawn
+## allocation. See _get_cached_material().
+var _material_cache: Dictionary = {}  # cache key (String) -> StandardMaterial3D
+## Perf: node pools keyed by a structural signature string (e.g.
+## "rock_3", "obstacle_4", "pillar", "cube", "cliff", "collectible") —
+## see _acquire_pooled/_release_to_pool and _recycle_chunk. Companion to
+## _material_cache above: that cache stops materials from being
+## reallocated every spawn, this stops the meshes/collision shapes/Area3D
+## wrapper themselves from being rebuilt every spawn too.
+var _prop_pools: Dictionary = {}      # signature (String) -> Array[Node3D]
+var _pool_holder: Node3D              # parent for pooled-but-inactive nodes; set in _ready()
 var _pool: Array[Node3D] = []        # recycled, hidden containers ready to reuse
 var _current_center: Vector2i = Vector2i(999999, 999999)  # forces first update
 ## Forward chunk index (key.y) up to which newly-populated chunks should
@@ -350,6 +369,15 @@ func _ready() -> void:
 	# wired to this specific instance — same reasoning as Player's
 	# add_to_group("player") in player.gd.
 	add_to_group("procedural_world")
+	# Perf: parent for pooled props/obstacles/collectibles between chunk
+	# recycles (see _release_to_pool / _acquire_pooled). Kept out of any
+	# chunk container so it survives chunk reuse untouched; hidden so a
+	# pooled-but-not-yet-reacquired node never renders or gets confused
+	# for something still in play.
+	_pool_holder = Node3D.new()
+	_pool_holder.name = "PropPoolHolder"
+	_pool_holder.visible = false
+	add_child(_pool_holder)
 
 
 func _process(_delta: float) -> void:
@@ -390,12 +418,26 @@ func _spawn_chunk(key: Vector2i) -> void:
 	_chunks[key] = container
 
 
+## Perf: any node built by a pooling-aware builder (rock cluster, cliff,
+## obstacle spikes, pillar, cube, collectible — see each _make_* below)
+## carries a "pool_sig" meta string identifying its exact structure (shape
+## type + child count, since a couple of these have a randomized boulder/
+## spike count). On recycle, those get parked under _pool_holder instead
+## of freed, so the next chunk that needs the same signature can reuse the
+## node's existing meshes/collision shapes instead of allocating new ones.
+## Anything WITHOUT that meta (landmark scenes, castle wall pieces sourced
+## from real FBX assets, castle scatter props) is rare/chance-gated enough
+## that it isn't worth pooling yet, and still gets queue_free()'d exactly
+## like before this change.
 func _recycle_chunk(key: Vector2i) -> void:
 	var container: Node3D = _chunks[key]
 	_chunks.erase(key)
 	container.visible = false
 	for child in container.get_children():
-		child.queue_free()
+		if child.has_meta("pool_sig"):
+			_release_to_pool(child)
+		else:
+			child.queue_free()
 	_pool.append(container)
 
 
@@ -405,6 +447,40 @@ func _get_pooled_container() -> Node3D:
 	var container := Node3D.new()
 	add_child(container)
 	return container
+
+
+## Returns a previously-released node matching `sig`, fully reactivated
+## (visible, Area3D monitoring re-enabled) and detached from the pool
+## holder — ready for the caller to reposition/re-randomize and add to a
+## chunk container. Returns null if the pool is empty for that signature,
+## in which case the caller builds a fresh node as it always did.
+func _acquire_pooled(sig: String) -> Node3D:
+	if not _prop_pools.has(sig) or _prop_pools[sig].is_empty():
+		return null
+	var node: Node3D = _prop_pools[sig].pop_back()
+	_pool_holder.remove_child(node)
+	node.visible = true
+	if node is Area3D:
+		node.monitoring = true
+		node.monitorable = true
+	return node
+
+
+## Parks a poolable node under _pool_holder, disabling anything that would
+## let it keep affecting gameplay while sitting there — physics detection
+## in particular, since an Area3D that stayed monitoring while hidden could
+## still emit body_entered for something clipping through the pool holder.
+func _release_to_pool(node: Node3D) -> void:
+	var sig: String = node.get_meta("pool_sig")
+	node.get_parent().remove_child(node)
+	node.visible = false
+	if node is Area3D:
+		node.monitoring = false
+		node.monitorable = false
+	_pool_holder.add_child(node)
+	if not _prop_pools.has(sig):
+		_prop_pools[sig] = []
+	_prop_pools[sig].append(node)
 
 
 ## Pure function of forward depth (key.y) — deliberately ignores lateral
@@ -883,25 +959,28 @@ func _spawn_pillar_row(
 ## _make_cliff uses) so the hitbox tracks the mesh's actual footprint
 ## rather than a full bounding box.
 func _make_pillar() -> Node3D:
-	var area := Area3D.new()
-	area.add_to_group("obstacle")
+	var area := _acquire_pooled("pillar")
+	if area == null:
+		area = Area3D.new()
+		area.add_to_group("obstacle")
+		var new_mesh_instance := _make_paper_mesh_instance(BoxMesh.new())
+		area.add_child(new_mesh_instance)
+		var new_collision := CollisionShape3D.new()
+		new_collision.shape = BoxShape3D.new()
+		area.add_child(new_collision)
+		area.body_entered.connect(_on_obstacle_body_entered)
+		area.set_meta("pool_sig", "pillar")
 
-	var mesh := BoxMesh.new()
+	var mesh_instance: MeshInstance3D = area.get_child(0)
+	var collision: CollisionShape3D = area.get_child(1)
+	var mesh: BoxMesh = mesh_instance.mesh
 	mesh.size = Vector3(
 		_rng.randf_range(2.0, 3.2), _rng.randf_range(14.0, 26.0), _rng.randf_range(2.0, 3.2)
 	)
-	var mesh_instance := _make_paper_mesh_instance(mesh)
 	mesh_instance.position.y = mesh.size.y * 0.5
-	area.add_child(mesh_instance)
-
-	var collision := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
+	var shape: BoxShape3D = collision.shape
 	shape.size = mesh.size * Vector3(0.85, 1.0, 0.85)
-	collision.shape = shape
 	collision.position.y = mesh.size.y * 0.5
-	area.add_child(collision)
-
-	area.body_entered.connect(_on_obstacle_body_entered)
 	return area
 
 
@@ -1012,27 +1091,30 @@ func _spawn_cube_gate_row(
 ## into it. Collision shrunk 0.85 on X/Z/Y, same fudge _make_pillar/
 ## _make_cliff use so the hitbox tracks the mesh's actual footprint.
 func _make_cube() -> Node3D:
-	var area := Area3D.new()
-	area.add_to_group("obstacle")
+	var area := _acquire_pooled("cube")
+	if area == null:
+		area = Area3D.new()
+		area.add_to_group("obstacle")
+		var new_mesh_instance := _make_paper_mesh_instance(BoxMesh.new())
+		area.add_child(new_mesh_instance)
+		var new_collision := CollisionShape3D.new()
+		new_collision.shape = BoxShape3D.new()
+		area.add_child(new_collision)
+		area.body_entered.connect(_on_obstacle_body_entered)
+		area.set_meta("pool_sig", "cube")
 
-	var mesh := BoxMesh.new()
+	var mesh_instance: MeshInstance3D = area.get_child(0)
+	var collision: CollisionShape3D = area.get_child(1)
+	var mesh: BoxMesh = mesh_instance.mesh
 	mesh.size = Vector3(
 		_rng.randf_range(cube_size_min, cube_size_max),
 		_rng.randf_range(cube_size_min, cube_size_max),
 		_rng.randf_range(cube_size_min, cube_size_max)
 	)
-	var mesh_instance := _make_paper_mesh_instance(mesh)
 	mesh_instance.position.y = mesh.size.y * 0.5
-	area.add_child(mesh_instance)
-
-	var collision := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
+	var shape: BoxShape3D = collision.shape
 	shape.size = mesh.size * Vector3(0.85, 0.85, 0.85)
-	collision.shape = shape
 	collision.position.y = mesh.size.y * 0.5
-	area.add_child(collision)
-
-	area.body_entered.connect(_on_obstacle_body_entered)
 	return area
 
 
@@ -1313,74 +1395,108 @@ func _make_random_prop() -> Node3D:
 			return _make_cliff()
 
 
+## Fetch-or-create a shared StandardMaterial3D for a given (color, emission)
+## combo. `cache_key` just needs to be stable and unique per distinct look —
+## callers pass a short string like "paper" or "spike_black" rather than
+## re-deriving one from the color values. Pass emission_color with alpha > 0
+## to enable emission (used by the Shade collectible glow); leave it at the
+## default (alpha 0) for plain albedo-only materials like paper props and
+## obstacle spikes.
+func _get_cached_material(
+	cache_key: String, color: Color, emission_color: Color = Color(0.0, 0.0, 0.0, 0.0)
+) -> StandardMaterial3D:
+	if _material_cache.has(cache_key):
+		return _material_cache[cache_key]
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = color
+	if emission_color.a > 0.0:
+		mat.emission_enabled = true
+		mat.emission = emission_color
+		mat.emission_energy_multiplier = 1.6
+	if outline_material:
+		mat.next_pass = outline_material
+	_material_cache[cache_key] = mat
+	return mat
+
+
 func _make_paper_mesh_instance(mesh: Mesh) -> MeshInstance3D:
 	var mesh_instance := MeshInstance3D.new()
 	mesh_instance.mesh = mesh
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = PAPER_COLOR
-	if outline_material:
-		mat.next_pass = outline_material
-	mesh_instance.material_override = mat
+	mesh_instance.material_override = _get_cached_material("paper", PAPER_COLOR)
 	return mesh_instance
 
 
 func _make_rock_cluster() -> Node3D:
-	var area := Area3D.new()
-	area.add_to_group("obstacle")
 	var boulder_count := _rng.randi_range(2, 4)
+	var sig := "rock_%d" % boulder_count
+	var area := _acquire_pooled(sig)
+	if area == null:
+		area = Area3D.new()
+		area.add_to_group("obstacle")
+		for i in boulder_count:
+			var new_mesh_instance := _make_paper_mesh_instance(SphereMesh.new())
+			area.add_child(new_mesh_instance)
+			# One collision sphere per boulder, sized to that boulder alone —
+			# a single sphere wrapping the whole cluster used to block a much
+			# wider circle of "air" than any boulder actually occupied, which
+			# is exactly the "there's a gap but it still collides" complaint.
+			var new_collision := CollisionShape3D.new()
+			new_collision.shape = SphereShape3D.new()
+			area.add_child(new_collision)
+		area.body_entered.connect(_on_obstacle_body_entered)
+		area.set_meta("pool_sig", sig)
+
+	# Re-randomize every boulder pair regardless of whether `area` is
+	# freshly built above or was just pulled out of the pool — this is
+	# what gives a reused node the same visual variety a brand-new one
+	# would have had.
 	for i in boulder_count:
-		var mesh := SphereMesh.new()
+		var mesh_instance: MeshInstance3D = area.get_child(i * 2)
+		var collision: CollisionShape3D = area.get_child(i * 2 + 1)
+		var mesh: SphereMesh = mesh_instance.mesh
 		mesh.radius = _rng.randf_range(1.5, 3.5)
 		mesh.height = mesh.radius * 1.6
 		mesh.radial_segments = 8
 		mesh.rings = 5
-		var mesh_instance := _make_paper_mesh_instance(mesh)
 		var offset := Vector3(
 			_rng.randf_range(-2.0, 2.0), mesh.radius * 0.3, _rng.randf_range(-2.0, 2.0)
 		)
 		mesh_instance.position = offset
 		mesh_instance.scale.y = _rng.randf_range(0.6, 0.9)
-		area.add_child(mesh_instance)
-
-		# One collision sphere per boulder, sized to that boulder alone —
-		# a single sphere wrapping the whole cluster used to block a much
-		# wider circle of "air" than any boulder actually occupied, which
-		# is exactly the "there's a gap but it still collides" complaint.
-		var collision := CollisionShape3D.new()
-		var shape := SphereShape3D.new()
+		var shape: SphereShape3D = collision.shape
 		shape.radius = mesh.radius
-		collision.shape = shape
 		collision.position = offset
-		area.add_child(collision)
-	area.body_entered.connect(_on_obstacle_body_entered)
 	return area
 
 
 func _make_cliff() -> Node3D:
-	var area := Area3D.new()
-	area.add_to_group("obstacle")
+	var area := _acquire_pooled("cliff")
+	if area == null:
+		area = Area3D.new()
+		area.add_to_group("obstacle")
+		var new_mesh_instance := _make_paper_mesh_instance(PrismMesh.new())
+		area.add_child(new_mesh_instance)
+		# A box, not a sphere sized to the diagonal — the old version used the
+		# corner-to-center distance as a sphere radius, which over-covers along
+		# the faces (where the player actually approaches from) by roughly 40%.
+		# Slightly shrunk on X/Z besides, since a prism's silhouette narrows
+		# toward its ridge and a full-width box still over-covers there.
+		var new_collision := CollisionShape3D.new()
+		new_collision.shape = BoxShape3D.new()
+		area.add_child(new_collision)
+		area.body_entered.connect(_on_obstacle_body_entered)
+		area.set_meta("pool_sig", "cliff")
 
-	var mesh := PrismMesh.new()
+	var mesh_instance: MeshInstance3D = area.get_child(0)
+	var collision: CollisionShape3D = area.get_child(1)
+	var mesh: PrismMesh = mesh_instance.mesh
 	mesh.size = Vector3(
 		_rng.randf_range(4.0, 7.0), _rng.randf_range(10.0, 22.0), _rng.randf_range(4.0, 7.0)
 	)
-	var mesh_instance := _make_paper_mesh_instance(mesh)
 	mesh_instance.position.y = mesh.size.y * 0.5
-	area.add_child(mesh_instance)
-
-	# A box, not a sphere sized to the diagonal — the old version used the
-	# corner-to-center distance as a sphere radius, which over-covers along
-	# the faces (where the player actually approaches from) by roughly 40%.
-	# Slightly shrunk on X/Z besides, since a prism's silhouette narrows
-	# toward its ridge and a full-width box still over-covers there.
-	var collision := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
+	var shape: BoxShape3D = collision.shape
 	shape.size = mesh.size * Vector3(0.8, 1.0, 0.8)
-	collision.shape = shape
 	collision.position.y = mesh.size.y * 0.5
-	area.add_child(collision)
-
-	area.body_entered.connect(_on_obstacle_body_entered)
 	return area
 
 
@@ -1391,50 +1507,53 @@ func _make_cliff() -> Node3D:
 ## happens, same "detect, don't simulate" approach as the rest of the
 ## controller.
 func _make_obstacle() -> Node3D:
-	var area := Area3D.new()
-	area.add_to_group("obstacle")
-
 	# Jagged, near-black spike cluster — deliberately reads as a different
 	# silhouette and value from the pale rounded rock props, so the player
 	# can tell "scenery" from "dodge this" at a glance without needing a
 	# saturated warning color the art direction rules out.
 	var spike_count := _rng.randi_range(2, 4)
+	var sig := "obstacle_%d" % spike_count
+	var area := _acquire_pooled(sig)
+	if area == null:
+		area = Area3D.new()
+		area.add_to_group("obstacle")
+		for i in spike_count:
+			var new_mesh_instance := MeshInstance3D.new()
+			new_mesh_instance.mesh = CylinderMesh.new()
+			area.add_child(new_mesh_instance)
+			# One collider per spike, sized to that spike's own base radius —
+			# same fix as the rock cluster. A cylinder rather than a sphere
+			# since the spike doesn't taper away in collision the way it does
+			# visually, but it at least tracks each spike's real footprint
+			# instead of one sphere spanning the whole cluster.
+			var new_collision := CollisionShape3D.new()
+			new_collision.shape = CylinderShape3D.new()
+			area.add_child(new_collision)
+		area.body_entered.connect(_on_obstacle_body_entered)
+		area.set_meta("pool_sig", sig)
+
 	for i in spike_count:
-		var mesh := CylinderMesh.new()
+		var mesh_instance: MeshInstance3D = area.get_child(i * 2)
+		var collision: CollisionShape3D = area.get_child(i * 2 + 1)
+		var mesh: CylinderMesh = mesh_instance.mesh
 		mesh.top_radius = 0.05
 		mesh.bottom_radius = _rng.randf_range(0.8, 1.6)
 		mesh.height = _rng.randf_range(3.0, 6.0)
 		mesh.radial_segments = 6
-
-		var mesh_instance := MeshInstance3D.new()
-		mesh_instance.mesh = mesh
-		var mat := StandardMaterial3D.new()
 		# Alternate pure black in with the near-black — the brief calls for
 		# a strict white/black/gray palette, and pure black on some spikes
 		# reads as more strongly "danger" than a uniform dark gray would.
-		mat.albedo_color = Color(0.0, 0.0, 0.0, 1.0) if _rng.randf() < 0.5 else Color(0.05, 0.05, 0.06, 1.0)
-		if outline_material:
-			mat.next_pass = outline_material
-		mesh_instance.material_override = mat
-
+		var is_pure_black := _rng.randf() < 0.5
+		mesh_instance.material_override = _get_cached_material(
+			"spike_black" if is_pure_black else "spike_near_black",
+			Color(0.0, 0.0, 0.0, 1.0) if is_pure_black else Color(0.05, 0.05, 0.06, 1.0)
+		)
 		var offset := Vector3(_rng.randf_range(-1.0, 1.0), mesh.height * 0.5, _rng.randf_range(-1.0, 1.0))
 		mesh_instance.position = offset
-		area.add_child(mesh_instance)
-
-		# One collider per spike, sized to that spike's own base radius —
-		# same fix as the rock cluster. A cylinder rather than a sphere
-		# since the spike doesn't taper away in collision the way it does
-		# visually, but it at least tracks each spike's real footprint
-		# instead of one sphere spanning the whole cluster.
-		var collision := CollisionShape3D.new()
-		var shape := CylinderShape3D.new()
+		var shape: CylinderShape3D = collision.shape
 		shape.radius = mesh.bottom_radius
 		shape.height = mesh.height
-		collision.shape = shape
 		collision.position = offset
-		area.add_child(collision)
-
-	area.body_entered.connect(_on_obstacle_body_entered)
 	return area
 
 
@@ -1491,55 +1610,73 @@ func grant_continue_grace(chunks: int = continue_grace_chunks) -> void:
 ## SHADE_COLORS (green or red) — see the note on that constant above for
 ## why this deliberately breaks the strict white/black/gray palette.
 func _make_collectible() -> Node3D:
-	var area := Area3D.new()
-	area.add_to_group("collectible")
+	var area := _acquire_pooled("collectible")
+	if area == null:
+		area = Area3D.new()
+		area.add_to_group("collectible")
 
-	var gem_color: Color = SHADE_COLORS[_rng.randi_range(0, SHADE_COLORS.size() - 1)]
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = gem_color
-	mat.emission_enabled = true
-	mat.emission = gem_color
-	mat.emission_energy_multiplier = 1.6
-	if outline_material:
-		mat.next_pass = outline_material
+		# Meshes live under a visual-only wrapper, NOT directly under the
+		# Area3D — see _play_collect_pop below for why: scaling the Area3D
+		# itself down to zero also scales its CollisionShape3D to zero, which
+		# Jolt logs as an invalid/singular transform. Scaling this wrapper
+		# instead leaves the Area3D's own transform untouched at all times.
+		var visual := Node3D.new()
+		visual.name = "Visual"
+		area.add_child(visual)
 
-	# Meshes live under a visual-only wrapper, NOT directly under the
-	# Area3D — see _play_collect_pop below for why: scaling the Area3D
-	# itself down to zero also scales its CollisionShape3D to zero, which
-	# Jolt logs as an invalid/singular transform. Scaling this wrapper
-	# instead leaves the Area3D's own transform untouched at all times.
-	var visual := Node3D.new()
-	visual.name = "Visual"
-	area.add_child(visual)
+		var top := PrismMesh.new()
+		top.size = Vector3(0.9, 0.7, 0.9)
+		var top_instance := MeshInstance3D.new()
+		top_instance.name = "TopHalf"
+		top_instance.mesh = top
+		visual.add_child(top_instance)
 
-	var top := PrismMesh.new()
-	top.size = Vector3(0.9, 0.7, 0.9)
-	var top_instance := MeshInstance3D.new()
-	top_instance.mesh = top
-	top_instance.material_override = mat
-	visual.add_child(top_instance)
+		var bottom := PrismMesh.new()
+		bottom.size = Vector3(0.9, 0.7, 0.9)
+		var bottom_instance := MeshInstance3D.new()
+		bottom_instance.name = "BottomHalf"
+		bottom_instance.mesh = bottom
+		# Flip the second prism upside-down and butt it against the first so
+		# the pair reads as one faceted gem rather than two separate wedges.
+		bottom_instance.rotation.x = PI
+		bottom_instance.position.y = -0.7
+		visual.add_child(bottom_instance)
 
-	var bottom := PrismMesh.new()
-	bottom.size = Vector3(0.9, 0.7, 0.9)
-	var bottom_instance := MeshInstance3D.new()
-	bottom_instance.mesh = bottom
-	bottom_instance.material_override = mat
-	# Flip the second prism upside-down and butt it against the first so
-	# the pair reads as one faceted gem rather than two separate wedges.
-	bottom_instance.rotation.x = PI
-	bottom_instance.position.y = -0.7
-	visual.add_child(bottom_instance)
+		# Single sphere collider is plenty here — unlike the rocks/cliffs above,
+		# a Shade is small and roughly uniform in every direction, so there's no
+		# "gap but it still collides" complaint to solve.
+		var new_collision := CollisionShape3D.new()
+		var shape := SphereShape3D.new()
+		shape.radius = 0.9
+		new_collision.shape = shape
+		area.add_child(new_collision)
 
-	# Single sphere collider is plenty here — unlike the rocks/cliffs above,
-	# a Shade is small and roughly uniform in every direction, so there's no
-	# "gap but it still collides" complaint to solve.
-	var collision := CollisionShape3D.new()
-	var shape := SphereShape3D.new()
-	shape.radius = 0.9
-	collision.shape = shape
-	area.add_child(collision)
+		area.body_entered.connect(_on_collectible_body_entered.bind(area))
+		area.set_meta("pool_sig", "collectible")
 
-	area.body_entered.connect(_on_collectible_body_entered.bind(area))
+	# Collected Shades free themselves outright at the end of their pop
+	# tween (see _play_collect_pop) rather than going back through
+	# _recycle_chunk, so only UNcollected ones — which never had their
+	# scale/monitoring touched — actually reach this reuse path. Still,
+	# resetting them here is cheap insurance against future changes to
+	# that pop flow leaving a pooled instance in a half-popped state.
+	var visual: Node3D = area.get_node("Visual")
+	visual.scale = Vector3.ONE
+	# get_child(1) instead of get_node("CollisionShape3D") — the collision
+	# shape below is never given an explicit .name, so it's at the mercy of
+	# Godot's auto-naming, which isn't guaranteed to land on exactly
+	# "CollisionShape3D". Every other pooled builder in this file (pillar,
+	# cube, cliff, rock cluster) already looks its collision shape up by
+	# child index for this exact reason — matching that here instead of
+	# the name lookup that was crashing on reused pool nodes.
+	var collision: CollisionShape3D = area.get_child(1)
+	collision.disabled = false
+
+	var gem_index := _rng.randi_range(0, SHADE_COLORS.size() - 1)
+	var gem_color: Color = SHADE_COLORS[gem_index]
+	var mat := _get_cached_material("shade_%d" % gem_index, gem_color, gem_color)
+	visual.get_node("TopHalf").material_override = mat
+	visual.get_node("BottomHalf").material_override = mat
 	return area
 
 
@@ -1562,7 +1699,7 @@ func _on_collectible_body_entered(body: Node, area: Area3D) -> void:
 	# Same reasoning applies to the collision shape: disable it deferred
 	# too so nothing else can start overlapping it mid-pop either, on top
 	# of monitoring already being off.
-	var collision_shape: CollisionShape3D = area.get_node("CollisionShape3D") if area.has_node("CollisionShape3D") else null
+	var collision_shape: CollisionShape3D = area.get_child(1) if area.get_child_count() > 1 else null
 	if collision_shape:
 		collision_shape.set_deferred("disabled", true)
 	body.collect_shade(collectible_meter_fill, collectible_score_value)

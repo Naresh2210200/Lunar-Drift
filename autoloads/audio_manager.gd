@@ -24,6 +24,7 @@ const SFX := {
 	"boost": "res://assets/audio/boost.mp3",
 	"button_press": "res://assets/audio/button_press.mp3",
 	"collection": "res://assets/audio/collection_sound.mp3",
+	"explosion": "res://assets/audio/explosion.mp3",
 }
 
 ## How many overlapping one-shot SFX (button taps, boosts, pickups landing
@@ -117,8 +118,8 @@ func _next_pool_player() -> AudioStreamPlayer:
 # ---------------------------------------------------------------------
 
 ## key must be one of the SFX dictionary keys above ("boost",
-## "button_press", "collection"). Silently no-ops on an unknown key or a
-## missing file, so a typo never crashes gameplay.
+## "button_press", "collection", "explosion"). Silently no-ops on an
+## unknown key or a missing file, so a typo never crashes gameplay.
 func play_sfx(key: String, volume_db: float = 0.0) -> void:
 	if not SFX.has(key):
 		push_warning("AudioManager: unknown sfx key '%s'" % key)

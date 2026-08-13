@@ -12,7 +12,10 @@ const RING_WIDTH: float = 8.0
 const COLOR_RING: Color = Color(0.08, 0.08, 0.08, 0.85)
 
 # Matches BASE_RADIUS in round_touch_button.gd so the ring hugs the button.
-const BUTTON_RADIUS: float = 60.0
+# (Was 60.0, silently out of sync with round_touch_button's 90.0 — fixed
+# to actually match now, and bumped to 108.0 alongside that button's own
+# size increase.)
+const BUTTON_RADIUS: float = 108.0
 
 var _progress: float = 0.0  # 1.0 = just used (full ring), 0.0 = ready (no ring)
 

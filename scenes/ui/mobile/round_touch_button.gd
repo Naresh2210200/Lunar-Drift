@@ -13,7 +13,13 @@ extends Control
 ## opaque; PauseButton sets 0.4 in the scene to sit quietly in the corner.
 @export var idle_alpha: float = 1.0
 
-const BASE_RADIUS: float = 90.0
+# Bumped from 90.0 to 108.0 (+20%) for easier touch during fast gameplay —
+# see cooldown_ring.gd's BUTTON_RADIUS, which must stay in sync with this,
+# and mobile_controls.tscn, where each button's Control rect (the actual
+# touch hit area, hit-tested via get_global_rect() in
+# mobile_input_controller.gd) was scaled by the same 1.2x so the touch
+# area keeps the same generous margin around the bigger visual circle.
+const BASE_RADIUS: float = 108.0
 const PRESSED_SCALE: float = 0.92
 const OUTLINE_WIDTH: float = 6.0
 const COLOR_PAPER: Color = Color(1, 1, 1, 1)
